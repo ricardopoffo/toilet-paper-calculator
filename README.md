@@ -21,6 +21,6 @@
     - Tipo: Folha dupla, Folha simples
 
 # Descrição da arquitetura TO BE
-1. Lógica de negócio em Python acessível via REST rodando em container docker na VPS Hostinger;
-2. Banco de dados rodando em container docker na VPS Hostinger;
+1. Lógica de negócio em Java/Spring Boot acessível via API REST rodando em container docker na VPS Hostinger;
+2. Banco de dados Postgres rodando em container docker na VPS Hostinger;
 3. Front end em Vue.js rodando na Netlify# challenges
