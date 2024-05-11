@@ -34,6 +34,7 @@ jobs:
             mvn -B package --file pom.xml
 
     publish:
+        needs: build
         name: publish image
         runs-on: ubuntu-latest
 
