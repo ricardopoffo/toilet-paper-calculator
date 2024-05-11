@@ -2,7 +2,8 @@ FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
-ADD target/toilet-paper-calculator-0.0.1-SNAPSHOT.jar /app/tpc-api.jar
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} /app/tpc-api.jar
 
 EXPOSE 8080
 
