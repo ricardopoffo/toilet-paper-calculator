@@ -1,7 +1,7 @@
 name: publish
 
 on:
-  pull_request:
+  push:
     branches: 
       - main
 
@@ -26,8 +26,13 @@ jobs:
             java-version: 17
             cache: maven
 
+        - name: unit tests
+          run: mvn -B test --file pom.xml
+
         - name: build the app
-          run: mvn --batch-mode package
+          run: |
+            mvn clean
+            mvn -B package --file pom.xml
 
     publish:
         needs: build
