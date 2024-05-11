@@ -1,7 +1,7 @@
 name: Build and deploy a container to a VPS
 
 env:
-  WEBAPP_NAME: hogwarts-artifacts-online
+  WEBAPP_NAME: tpc-app
 
 on:
   pull_request:
@@ -45,37 +45,19 @@ jobs:
           tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
           file: ./Dockerfile
 
-  deploy:
-    needs: build
-    name: deploy image
+  deploy_to_vps:
     runs-on: ubuntu-latest
-
+    needs: build
+    name: Deploy to VPS
     steps:
-    - name: install ssh keys
-      # check this thread to understand why its needed:
-      # <https://stackoverflow.com/a/70447517>
-      run: |
-        install -m 600 -D /dev/null ~/.ssh/id_rsa
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
-    - name: connect and pull
-      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && docker compose pull && docker compose up -d && exit"
-    - name: cleanup
-      run: rm -rf ~/.ssh
-
-#   deploy:
-#     runs-on: ubuntu-latest
-
-#     needs: build
-
-#     steps:
-#       - name: Lowercase the repo name
-#         run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
-#       - name: Deploy to Azure Web App
-#         id: deploy-to-webapp
-#         uses: azure/webapps-deploy@v3
-#         with:
-#           app-name: ${{ env.WEBAPP_NAME }}
-#           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-#           images: 'ghcr.io/${{ env.REPO }}:${{ github.sha }}'
-# #          slot-name: staging
+      - name: Connect with SSH and Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.WORK_DIR }}
+            docker compose pull
+            docker compose up -d
+            docker ps -a
