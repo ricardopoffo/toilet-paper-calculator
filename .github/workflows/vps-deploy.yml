@@ -60,3 +60,4 @@ jobs:
             whoami
             cd ${{ secrets.WORK_DIR }}
             ls -al
+            docker ps -a
